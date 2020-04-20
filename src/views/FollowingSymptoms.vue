@@ -48,7 +48,7 @@ export default {
     methods: {
         yes: function() {
             const answer = {
-                key: 'share_identifiable_information',
+                key: 'has_serious_health_conditions',
                 value: 'yes'
             }
 
@@ -57,12 +57,12 @@ export default {
         },
         no: function() {
             const answer = {
-                key: 'share_identifiable_information',
-                value: 'yes'
+                key: 'has_serious_health_conditions',
+                value: 'no'
             }
 
             this.$store.commit('SET_DATA_SURVEY', answer)
-            
+
             this.$store.commit('SET_PERCENTAGE', 9)
             switch (this.lastPage) {
                 case 'Advertisement':

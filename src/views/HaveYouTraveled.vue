@@ -1,5 +1,10 @@
 <template>
     <div class="container traveled">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="78" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-22.png">
@@ -14,11 +19,11 @@
             <div class="offset-2 col-10 offset-md-3 col-md-8">
                 <div class="row">
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="germany">
+                        <input type="checkbox" id="germany" @change="check('Germany')">
                         <label for="germany" class="country-name">{{ $t('haveYouTraveled.germany') }}</label>
                     </div>
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="spain">
+                        <input type="checkbox" id="spain" @change="check('Spain')">
                         <label for="spain" class="country-name">
                             {{ $t('haveYouTraveled.spain') }}
                         </label>
@@ -30,13 +35,13 @@
             <div class="offset-2 col-10 offset-md-3 col-md-8">
                 <div class="row">
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="iran">
+                        <input type="checkbox" id="iran" @change="check('Iran')">
                         <label for="iran" class="country-name">
                             {{ $t('haveYouTraveled.iran') }}
                         </label>
                     </div>
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="korea">
+                        <input type="checkbox" id="korea" @change="check('Korea')">
                         <label for="korea" class="country-name">
                             {{ $t('haveYouTraveled.korea') }}
                         </label>
@@ -48,13 +53,13 @@
             <div class="offset-2 col-10 offset-md-3 col-md-8">
                 <div class="row">
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="china">
+                        <input type="checkbox" id="china" @change="check('China')">
                         <label for="china" class="country-name">
                             {{ $t('haveYouTraveled.china') }}
                         </label>
                     </div>
                     <div class="col-6 country-option">
-                        <input type="checkbox" id="italy">
+                        <input type="checkbox" id="italy" @change="check('Italy')">
                         <label for="italy" class="country-name">
                             {{ $t('haveYouTraveled.italy') }}
                         </label>
@@ -77,13 +82,39 @@
 
 <script>
 export default {
+    data() {
+        return {
+            countries: []
+        }
+    },
     methods: {
         none: function() {
+            const answer = {
+                key: 'traveled_locations',
+                value: []
+            }
+            
+            this.$store.commit('SET_DATA_SURVEY', answer) 
             this.$router.push({ name: 'TalkDoctor' })
         },
         nextPage: function() {
+            const answer = {
+                key: 'traveled_locations',
+                value: this.countries
+            }
+            
+            this.$store.commit('SET_DATA_SURVEY', answer) 
             this.$store.commit('SET_HAS_TRAVELED', true)
             this.$router.push({ name: 'TalkDoctor' })
+        },
+        check: function(value) {
+            if (this.countries.includes(value)) {
+                const index = this.countries.indexOf(value)
+
+                this.countries.splice(index, 1)
+            } else {
+                this.countries.push(value)
+            }
         }
     }
 }
@@ -91,7 +122,7 @@ export default {
 
 <style>
 .traveled .row-img {
-    padding-top: 4.2rem;
+    padding-top: 1rem;
 }
 
 .traveled .title {

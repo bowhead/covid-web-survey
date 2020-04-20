@@ -1,5 +1,10 @@
 <template>
     <div class="container coronavirus-result">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="95" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-33.png">
@@ -32,12 +37,30 @@
 export default {
     methods: {
         positive: function() {
+            const answer = {
+                key: 'coronavirus_test_result',
+                value: 'positive'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'ShowHospitals' })
         },
         negative: function() {
+            const answer = {
+                key: 'coronavirus_test_result',
+                value: 'negative'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'WashYourHands' }) 
         },
         waiting: function() {
+            const answer = {
+                key: 'coronavirus_test_result',
+                value: 'waiting for the result'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'ShowHospitals' }) 
         }
     }
@@ -46,7 +69,7 @@ export default {
 
 <style>
 .coronavirus-result .row-img {
-    padding-top: 6rem;
+    padding-top: 4.5rem;
 }
 
 .coronavirus-result .title {

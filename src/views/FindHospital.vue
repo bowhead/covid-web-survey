@@ -1,5 +1,10 @@
 <template>
     <div class="container find-hospital">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="87" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-title">
             <div class="col-12 text-center text-nowrap">
                 <label class="title">{{ $t('findHospital.title') }}</label>
@@ -58,7 +63,7 @@ export default {
 
 <style>
 .find-hospital .row-title {
-    padding-top: 4rem;
+    padding-top: 1.5rem;
 }
 
 .find-hospital .title {

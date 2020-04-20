@@ -1324,7 +1324,7 @@ import CountryFlag from 'vue-country-flag'
         },
         methods: {
             sendMessage: function() {
-                this.sendSMS()       
+                //this.sendSMS()       
             },
             show: function() {
                 this.$modal.show('countries')
@@ -1367,8 +1367,7 @@ import CountryFlag from 'vue-country-flag'
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('get-sign-in-code', 
             {
                 size : 'invisible',
-                callback: function(response) {
-                    console.log(response)
+                callback: function() {
                     self.sendSMS()
                 }
             })

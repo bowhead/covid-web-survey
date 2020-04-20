@@ -1,5 +1,10 @@
 <template>
     <div class="container how-sore-throat">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="45" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-3.png">
@@ -16,7 +21,7 @@
                     <div class="col-4">
                         <div class="row">
                             <div class="col text-center option">
-                                <input class="option-radio" type="radio"/>
+                                <input v-model="level" value="mild" class="option-radio" type="radio"/>
                                 <label class="label-option">{{ $t('general.mild') }}</label>
                             </div>
                         </div>
@@ -24,7 +29,7 @@
                     <div class="col-4">
                         <div class="row">
                             <div class="col text-center option">
-                                <input class="option-radio" type="radio"/>
+                                <input v-model="level" value="moderate" class="option-radio" type="radio"/>
                                 <label class="label-option">{{ $t('general.moderate') }}</label>
                             </div>
                         </div>
@@ -32,7 +37,7 @@
                     <div class="col-4">
                         <div class="row">
                             <div class="col text-center option">
-                                <input class="option-radio" type="radio"/>
+                                <input v-model="level" value="severe" class="option-radio" type="radio"/>
                                 <label class="label-option">{{ $t('general.severe') }}</label>
                             </div>
                         </div>
@@ -42,7 +47,7 @@
         </div>
         <div class="row row-next">
             <div class="col-12 offset-md-3 col-md-6 text-center">
-                <button class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
+                <button :disabled="disable" class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
             </div>
         </div>
     </div>
@@ -50,8 +55,25 @@
 
 <script>
 export default {
+    data() {
+        return {
+            level: ''
+        }
+    },
+    computed: {
+        disable() {
+            return this.level === ''? true : false
+        }
+    },
     methods: {
         nextPage: function() {
+            const answer = {
+                key: 'sore_throat_level',
+                value: this.level
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+
             this.$router.push({ name: 'YouHaveHeadache' }) 
         }   
     }
@@ -60,7 +82,7 @@ export default {
 
 <style>
 .how-sore-throat .row-img {
-    padding-top: 6.5rem;
+    padding-top: 4rem;
 }
 
 .how-sore-throat .title {

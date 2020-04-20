@@ -19,7 +19,8 @@ export default new VueI18n({
                 moderate: 'Moderate',
                 severe: 'Severe',
                 date: 'Date',
-                selectDate: 'Select date'
+                selectDate: 'Select date',
+                missingFields: 'Complete the missing fields to continue'
             },
             signIn: {
                 title: '12 words security',

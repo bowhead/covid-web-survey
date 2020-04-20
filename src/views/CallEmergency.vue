@@ -21,16 +21,20 @@
 <script>
 export default {
     methods: {
-        finish: function() {
+        finish: async function() {
             switch (this.lastPage) {
                 case 'Advertisement':
                     this.$router.push({ name: 'ShareInformation' })
                     break;
                 case 'Symptoms':
-                    this.$router.push({ name: 'Advertisement' })
+                    this.$store.dispatch('getSurveyHash')
+                    await this.$store.dispatch('saveSurvey')
+                    this.$router.push({ name: 'Backup' })
                     break;
                 case '':
-                    this.$router.push({ name: 'Advertisement' })
+                    this.$store.dispatch('getSurveyHash')
+                    await this.$store.dispatch('saveSurvey')
+                    this.$router.push({ name: 'Backup' })
                     break;
             }
         }

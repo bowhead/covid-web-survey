@@ -1,5 +1,10 @@
 <template>
     <div class="container how-cough">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="61" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-16.png">
@@ -16,7 +21,7 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col text-center option">
-                                <input class="option-radio" type="radio"/>
+                                <input v-model="level" value="dry" class="option-radio" type="radio"/>
                                 <label class="label-option dry">{{ $t('howCough.dry') }}</label>
                             </div>
                         </div>
@@ -24,7 +29,7 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col offset-md-3 col-md-6 text-center option">
-                                <input class="option-radio" type="radio"/>
+                                <input v-model="level" value="productive with phlegm " class="option-radio" type="radio"/>
                                 <label class="label-option">{{ $t('howCough.productive') }}</label>
                             </div>
                         </div>
@@ -34,7 +39,7 @@
         </div>
         <div class="row row-next">
             <div class="col-12 offset-md-3 col-md-6 text-center">
-                <button class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
+                <button :disabled="disable" class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
             </div>
         </div>
     </div>
@@ -42,8 +47,24 @@
 
 <script>
 export default {
+    data() {
+        return {
+            level: ''
+        }
+    },
+    computed: {
+        disable() {
+            return this.level === ''? true : false
+        }
+    },
     methods: {
         nextPage: function() {
+            const answer = {
+                key: 'cough_level',
+                value: this.level
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'CoughRecording' })         
         }
     }
@@ -52,7 +73,7 @@ export default {
 
 <style>
 .how-cough .row-img {
-    padding-top: 6.5rem;
+    padding-top: 4rem;
 }
 
 .how-cough .title {

@@ -1,5 +1,10 @@
 <template>
     <div class="container have-difficulty-breath">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="64" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-18.png">
@@ -23,9 +28,22 @@ import YesNo from '../components/YesNoButtons.vue'
 export default {
     methods: {
         yes: function() {
+            const answer = {
+                key: 'have_difficulty_breathing',
+                value: 'yes'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'HowBreathe' })
         },
         no: function() {
+            const answer = {
+                key: 'have_difficulty_breathing',
+                value: 'no'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+
             if (this.hasSymptoms) {
                 this.$router.push({ name: 'WhenSymptomsStart' })
             } else {
@@ -63,7 +81,7 @@ export default {
 
 <style>
 .have-difficulty-breath .row-img {
-    padding-top: 6rem;
+    padding-top: 4.5rem;
 }
 
 .have-difficulty-breath .row-title {

@@ -6,12 +6,12 @@
             </div>
         </div>
         <div class="row pt-4">
-            <div class="offset-1 col-10 col-backup text-center">
+            <div class="offset-1 col-10 offset-md-2 col-md-8 col-backup text-center">
                 <label class="info text-justify"><b>{{ $t('backup.warning') }}</b> {{ $t('backup.warningInfo') }}</label>
             </div>
         </div>
         <div class="row pt-3">
-            <div class="offset-1 col-10 col-words">
+            <div class="offset-1 col-10 offset-md-2 col-md-8 col-words">
                 <div class="col-12">
                     <div class="row">
                         <div class="col-4 text-center col-word">
@@ -79,12 +79,12 @@
             </div>
         </div>
         <div class="row pt-4">
-            <div class="offset-1 col-10 col-words text-center">
+            <div class="offset-1 col-10 offset-md-2 col-md-8 col-words text-center">
                 <label class="address">{{ address }}</label>
             </div>
         </div>
         <div class="row pt-4">
-            <div class="col-12 offset-md-4 col-md-4 text-center">
+            <div class="col-12 offset-md-3 col-md-6 text-center">
                 <button class="btn btn-lg text-light continue" @click="nextPage"><b>{{ $t('general.continue') }}</b></button>               
             </div>
         </div>
@@ -92,38 +92,19 @@
 </template>
 
 <script>
-import { generateMnemonic, EthHdWallet } from 'eth-hd-wallet'
-
     export default {
-        data() {
-            return {
-                address: '',
-                words: []
-            }
-        },
         methods: {
             nextPage: function() {
                 console.log('log')
             }
         },
-        mounted() {
-            const mnemonic = generateMnemonic()
-
-            this.words = mnemonic.split(' ')
-
-            const wallet = EthHdWallet.fromMnemonic(mnemonic)
-            
-            wallet.generateAddresses(1)
-            
-            this.address = '0x' + wallet._children[0].wallet.getAddress().toString('hex')
-
-            const account = {
-                address: '0x' + wallet._children[0].wallet.getAddress().toString('hex'),
-                publicKey: '0x' + wallet._children[0].wallet.getPublicKey().toString('hex'),
-                privateKey: wallet._children[0].wallet.getPrivateKey().toString('hex'),
+        computed: {
+            words() {
+                return this.$store.getters.getWords
+            },
+            address() {
+                return this.$store.getters.getUserAddress
             }
-
-            console.log(account)
         }
     }
 </script>

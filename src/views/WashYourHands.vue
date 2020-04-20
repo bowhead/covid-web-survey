@@ -1,5 +1,10 @@
 <template>
     <div class="container wash-hands">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="100" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-26.png">
@@ -26,8 +31,10 @@
 <script>
 export default {
     methods: {
-        done: function() {
-            this.$router.push({ name: 'Advertisement' })        
+        done: async function() {
+            this.$store.dispatch('getSurveyHash')
+            await this.$store.dispatch('saveSurvey')
+            this.$router.push({ name: 'Backup' })        
         }
     }
 }
@@ -35,7 +42,7 @@ export default {
 
 <style>
 .wash-hands .row-img {
-    padding-top: 6rem;
+    padding-top: 4.5rem;
 }
 
 .wash-hands .row-title {

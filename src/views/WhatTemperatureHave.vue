@@ -1,5 +1,10 @@
 <template>
     <div class="container what-temperature-have">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="52" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-12.png">
@@ -14,26 +19,26 @@
             <div class="offset-3 col-8 offset-md-3 col-md-8">
                 <div class="row">
                     <div class="col-2 select-number">
-                        <scroll-picker class="flex" :options="[1, 2, 3, 4, 5]"></scroll-picker>
+                        <scroll-picker v-model="number1" class="flex" :options="numbers"></scroll-picker>
                     </div>
                     <div class="col-2 select-number">
-                        <scroll-picker :options="[1, 2, 3, 4, 5]"></scroll-picker>
+                        <scroll-picker v-model="number2" :options="numbers"></scroll-picker>
                     </div>
-                    <div class="col-2 text-center">
+                    <div class="col-1 text-center">
                         <label for="" class="dot">.</label>
                     </div>
                     <div class="col-2 select-number">
-                        <scroll-picker :options="[1, 2, 3, 4, 5]"></scroll-picker>
+                        <scroll-picker v-model="number3" :options="numbers"></scroll-picker>
                     </div>
-                    <div class="col-2 select-type">
-                        <scroll-picker :options="['Cº','Fº']"></scroll-picker>
+                    <div class="col-3 select-type">
+                        <scroll-picker v-model="unit" :options="units"></scroll-picker>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row row-exact">
             <div class="offset-1 col-10 offset-md-2 col-md-8 text-center align-items-start">
-                <input class="option-radio" type="radio" id="no-exact"/>
+                <input @click="chageExactTemperature" :checked="exactTemperature" class="option-radio" type="radio" id="no-exact"/>
                 <label for="no-exact" class="form-check-label option-label">{{ $t('whatTemperatureHave.noExact') }}</label>
             </div>
         </div>
@@ -50,8 +55,34 @@ import "vue-scroll-picker/dist/style.css"
 import { ScrollPicker } from "vue-scroll-picker"
 
 export default {
+    data() {
+        return {
+            number1: null,
+            number2: null,
+            number3: null,
+            unit: null,
+            numbers: [1,2,3,4,5,6,7,8,9,0],
+            units: [{value: 'C', name: 'Cº'}, {value: 'F', name: 'Fº'}],
+            exactTemperature: false
+        }
+    },
     methods: {
+        chageExactTemperature: function() {
+            this.exactTemperature = !this.exactTemperature
+        },
         nextPage: function() {
+            if(!this.exactTemperature) {
+                const answer = {
+                    key: 'temperature_value',
+                    value: {
+                        value: Number(this.number1.toString() + this.number2.toString() + '.' + this.number3),
+                        unit: this.unit
+                    }
+                }
+
+                this.$store.commit('SET_DATA_SURVEY', answer)
+            }
+
             this.$router.push({ name: 'YouHaveMuscleAches' })     
         }
     },
@@ -63,7 +94,7 @@ export default {
 
 <style>
 .what-temperature-have .row-img {
-    padding-top: 6rem;
+    padding-top: 3.2rem;
 }
 
 .what-temperature-have .title {
