@@ -1344,12 +1344,14 @@ import CountryFlag from 'vue-country-flag'
                     .then(function (confirmationResult) {
                         window.confirmationResult = confirmationResult
 
-                        const countryCode = [{
-                            key: 'countryCode',
-                            data: self.country.code
-                        }]
-
-                        self.$store.commit('SET_REGISTER_INFORMATION', countryCode)
+                        if (!self.isLogin) {
+                            const countryCode = [{
+                                key: 'countryCode',
+                                data: self.country.code
+                            }]
+                            
+                            self.$store.commit('SET_REGISTER_INFORMATION', countryCode)
+                        }
 
                         self.$router.push({ name: 'Verify' })
                     }).catch(function (error) {
@@ -1359,6 +1361,11 @@ import CountryFlag from 'vue-country-flag'
                                 break;
                         }
                     })
+            }
+        },
+        computed: {
+            isLogin() {
+                return this.$store.getters.IsLogin
             }
         },
         mounted() {

@@ -27,13 +27,15 @@ export default {
                     this.$router.push({ name: 'ShareInformation' })
                     break;
                 case 'Symptoms':
-                    this.$store.dispatch('getSurveyHash')
                     await this.$store.dispatch('saveSurvey')
+                    if (!this.isLogin)
+                        await this.$store.dispatch('saveUserData')
                     this.$router.push({ name: 'Backup' })
                     break;
                 case '':
-                    this.$store.dispatch('getSurveyHash')
                     await this.$store.dispatch('saveSurvey')
+                    if (!this.isLogin)
+                        await this.$store.dispatch('saveUserData')
                     this.$router.push({ name: 'Backup' })
                     break;
             }
@@ -42,6 +44,9 @@ export default {
     computed: {
         lastPage () {
             return this.$store.getters.getLastPage;
+        },
+        isLogin() {
+            return this.$store.getters.IsLogin
         }
     }
 }

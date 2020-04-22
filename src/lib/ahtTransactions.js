@@ -64,9 +64,9 @@ function getNonce(web3, address) {
                 return;
             }
 
-            let lastNonce = Number(window.localStorage.getItem('nonce'))
+            let lastNonce = window.localStorage.getItem('nonce')? Number(window.localStorage.getItem('nonce')) : undefined
 
-            if(lastNonce === undefined || lastNonce === null || lastNonce === 'null' || lastNonce < nonce || lastNonce === 0 ) {
+            if(lastNonce === undefined || lastNonce === null || lastNonce === 'null' || lastNonce < nonce) {
                 window.localStorage.setItem('nonce', nonce);
                 lastNonce = nonce;
             } else {
@@ -77,6 +77,24 @@ function getNonce(web3, address) {
             resolve(lastNonce);
         })
     })
+}
+
+/**
+ * Generates a fromise from a async function that resolves with a function
+ * @param   {Function}  fn  The async function to execute
+ * @return  {Promise}      A new promise resolved when the function callback is executed
+ */
+function promersify(fn) {
+    return new Promise((resolve, reject) => {
+        fn((err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            
+            resolve(result);
+        });
+    });
 }
 
 /**
@@ -98,9 +116,10 @@ function getTransactionReceipt(web3, txHash) {
     });
 }
 
-async function addSurveyData(txData) {
-    let web3 = web3Factory.getInstance();
-    let contract = web3.aht.contract(gameAbi).at(txData.contractAddress)
+async function saveHash(txData) {
+    let web3 = web3Factory.getInstance(),
+        contract = web3.aht.contract(gameAbi).at(txData.contractAddress)
+    
     let rawTx = {
         'to': txData.contractAddress,
         'nonce': web3.toHex(await getNonce(web3, txData.address)),
@@ -108,13 +127,13 @@ async function addSurveyData(txData) {
         'gasLimit': 50000000,
         'value': '0x0',
         'data': contract.saveHash.getData(
-            'COVID19_Survey',
+            txData.type,
             web3.toHex(txData.hash1),
             web3.toHex(txData.hash2),
-            (+ new Date) 
+            (+ new Date)
         ),
         'chainId': txData.chainId
-    };
+    }
 
     try {
         let signedTx = singTransaction(rawTx, txData.privateKey),
@@ -127,8 +146,23 @@ async function addSurveyData(txData) {
     }
 }
 
+async function getInformationData(txData) {
+    let web3 = web3Factory.getInstance(),
+        contract = web3.aht.contract(gameAbi).at(txData.contractAddress)
+
+    let fn = contract.getInformationData.bind(
+        contract,
+        txData.type,
+        {'from': txData.address}
+    )
+
+    let userData = await promersify(fn)
+
+    return userData
+}
 
 export {
-    addSurveyData,
+    saveHash,
+    getInformationData,
     getTransactionReceipt
 }

@@ -72,18 +72,31 @@ export default {
             const code = this.number1 + this.number2 + this.number3 + this.number4 + this.number5 + this.number6
 
             window.confirmationResult.confirm(code).then(async function (result) {    
-                self.generateWords()
+                
+                if (!self.isLogin) {
+                    self.generateWords()
+                }
 
                 let token = await result.user.getIdToken(true)
                 
                 self.$store.commit('SET_AUTHORIZATION', token)
 
-                await self.$store.dispatch('register')
-                    .then(() => {
+                if (!self.isLogin) {
+                    await self.$store.dispatch('register')
+                        .then(() => {
+                            self.$router.push({ name: 'Symptoms' })
+                        }).catch ((error) => {
+                            self.$alert(error)
+                        });
+                } else {
+                    await self.$store.dispatch('hasSurvey')
+
+                    if (self.hasSurvey) {
+                        self.$router.push({ name: 'HowDoYouFell' })
+                    } else {
                         self.$router.push({ name: 'Symptoms' })
-                    }).catch ((error) => {
-                        this.$alert(error)
-                    });
+                    }
+                }
             }).catch(function (error) {
                 switch (error.code) {
                     case 'auth/invalid-verification-code': 
@@ -109,6 +122,14 @@ export default {
 
             this.$store.commit('SET_ACCOUNT', account)
         } 
+    },
+    computed: {
+        isLogin() {
+            return this.$store.getters.IsLogin
+        },
+        hasSurvey () {
+            return this.$store.getters.hasSurvey
+        }
     },
     mounted() {
         if (window.confirmationResult === undefined) {

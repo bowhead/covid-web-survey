@@ -53,6 +53,8 @@ export default new Vuex.Store({
     state: {
         percentage: 0,
         lastPage: '',
+        login: false,
+        surveyAnswered: false,
         hasSymptoms: false,
         hasTraveled: false,
         user: null,
@@ -71,8 +73,6 @@ export default new Vuex.Store({
         },
         data : surveyInitialData(),
         words: [],
-        hash1: '',
-        hash2: '',
         conditions: []
     },
     mutations: {
@@ -83,6 +83,9 @@ export default new Vuex.Store({
             axios.defaults.headers.common['x-auth-token'] = `Bearer ${
                 userData   
             }`
+        },
+        SET_LOGIN(state) {
+            state.login = true
         },
         SET_PERCENTAGE (state, percentage) {
             state.percentage = percentage
@@ -116,19 +119,22 @@ export default new Vuex.Store({
         SET_WORDS(state, words) {
             state.words = words
         },
-        SET_HASH(state, data) {
-            state.hash1 = data.hash1
-            state.hash2 = data.hash2
-        },
         CLEAN_DATA(state) {
-            state.hash1 = ''
-            state.hash2 = ''
             state.hasSymptoms = false
             state.hasTraveled = false
-            state.data = surveyInitialData
+            state.lastPage = ''
+            state.data = surveyInitialData()
         },
         SET_CONDITIONS(state, conditions) {
             state.conditions = conditions
+        },
+        SET_SURVEY_ANSWERED(state, answered) {
+            state.surveyAnswered = answered
+        },
+        CLEAN_ACCOUNT(state) {
+            state.address = ''
+            state.privateKey = ''
+            state.publicKey = ''
         }
     },
     actions: {
@@ -152,22 +158,16 @@ export default new Vuex.Store({
                     commit('SET_USER', data)
                 })
         },
-        getSurveyHash({ commit, state}) {
-            let credentials = JSON.parse(window.localStorage.getItem('credentials'))
+        async saveSurvey({commit, state}) {
+            let gameAbiAddress = process.env.VUE_APP_GAME_ABI,
+                credentials = JSON.parse(window.localStorage.getItem('credentials')),
+                txData;
 
             let covidSurvey = {
                 data: aes256.encrypt(credentials.privateKey, JSON.stringify(state.data)) 
             }
 
-            return LoginService.addHealthData(covidSurvey)
-                .then(({ data }) => {
-                    commit('SET_HASH', data)
-                })
-        },
-        async saveSurvey({commit, state}) {
-            let gameAbiAddress = process.env.VUE_APP_GAME_ABI,
-                credentials = JSON.parse(window.localStorage.getItem('credentials')),
-                txData;
+            let hashSurvey = await LoginService.addHealthData(covidSurvey)
 
             let survey = {
                 address: credentials.address,
@@ -176,11 +176,14 @@ export default new Vuex.Store({
             }
 
             try {
-                txData = await ahtTransactions.addSurveyData({
+                txData = await ahtTransactions.saveHash({
+                    'type': 'COVID19_Survey',
                     'contractAddress': gameAbiAddress,
                     'address': credentials.address,
                     'chainId': Number(process.env.VUE_APP_CHAIN_ID),
-                    'privateKey': credentials.privateKey
+                    'privateKey': credentials.privateKey,
+                    'hash1': hashSurvey.data.hash1,
+                    'hash2': hashSurvey.data.hash2
                 });
                 survey.txHash = txData;
 
@@ -208,6 +211,89 @@ export default new Vuex.Store({
                 .then(({ data }) => {
                     commit('SET_CONDITIONS', data)
                 })
+        },
+        async saveUserData({commit, state}) {
+            let credentials = JSON.parse(window.localStorage.getItem('credentials'))
+
+            let user = {
+                data: aes256.encrypt(credentials.privateKey, JSON.stringify(state.registerInformation))
+            }
+
+            let data = await LoginService.addHealthData(user);
+
+            let gameAbiAddress = process.env.VUE_APP_GAME_ABI,
+                txData;
+
+            let userInformation = {
+                address: credentials.address,
+                type: 'Profile',
+                data: state.registerInformation
+            }
+
+            try {
+                txData = await ahtTransactions.saveHash({
+                    'type': 'Profile',
+                    'contractAddress': gameAbiAddress,
+                    'address': credentials.address,
+                    'chainId': Number(process.env.VUE_APP_CHAIN_ID),
+                    'privateKey': credentials.privateKey,
+                    'hash1': data.data.hash1,
+                    'hash2': data.data.hash2
+                });
+                userInformation.txHash = txData;
+                
+                commit('CLEAN_DATA')
+            } catch (error) {
+                throw error;
+            }
+        },
+        async login({commit}, account) {
+            let gameAbiAddress = process.env.VUE_APP_GAME_ABI,
+                txData
+            
+            try {
+                txData = {
+                    'contractAddress': gameAbiAddress,
+                    'type': 'Profile',
+                    'address': account.address
+                }
+
+                let user = await ahtTransactions.getInformationData(txData);
+
+                commit('CLEAN_DATA')
+
+                return user
+
+            } catch (error) {
+                throw error
+            }     
+        },
+        async hasSurvey({commit}) {
+            let gameAbiAddress = process.env.VUE_APP_GAME_ABI,
+                credentials = JSON.parse(window.localStorage.getItem('credentials')),
+                txData
+            
+            try {
+                txData = {
+                    'contractAddress': gameAbiAddress,
+                    'type': 'COVID19_Survey',
+                    'address': credentials.address
+                }
+
+                let survey = await ahtTransactions.getInformationData(txData);
+
+                if(survey[1].substring(0,3) !== '0x0') {
+                    commit('SET_SURVEY_ANSWERED', true)
+                } else {
+                    commit('SET_SURVEY_ANSWERED', false)        
+                }
+            } catch (error) {
+                throw error     
+            }
+        },
+        logout({commit}) {
+            commit('CLEAN_ACCOUNT')
+            sessionStorage.clear()      
         }
     },
     getters: {
@@ -231,6 +317,12 @@ export default new Vuex.Store({
         },
         getFilterConditions: state => {
             return state.conditions
+        },
+        IsLogin: state => {
+            return state.login
+        },
+        hasSurvey: state => {
+            return state.surveyAnswered
         }
     }
 });

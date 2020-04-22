@@ -32,9 +32,15 @@
 export default {
     methods: {
         done: async function() {
-            this.$store.dispatch('getSurveyHash')
             await this.$store.dispatch('saveSurvey')
+            if (!this.isLogin)
+                await this.$store.dispatch('saveUserData')
             this.$router.push({ name: 'Backup' })        
+        }
+    },
+    computed: {
+        isLogin() {
+            return this.$store.getters.IsLogin
         }
     }
 }

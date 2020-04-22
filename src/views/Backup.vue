@@ -95,7 +95,8 @@
     export default {
         methods: {
             nextPage: function() {
-                console.log('log')
+                this.$store.dispatch('logout')
+                this.$router.push({ name: 'Symptoms' })
             }
         },
         computed: {

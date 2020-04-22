@@ -50,8 +50,9 @@ export default {
             }
 
             this.$store.commit('SET_DATA_SURVEY', answer)
-            this.$store.dispatch('getSurveyHash')
             await this.$store.dispatch('saveSurvey')
+            if (!this.isLogin)
+                await this.$store.dispatch('saveUserData')
             this.$router.push({ name: 'Backup' })
         },
         no: async function() {
@@ -61,13 +62,19 @@ export default {
             }
             
             this.$store.commit('SET_DATA_SURVEY', answer)
-            this.$store.dispatch('getSurveyHash')
             await this.$store.dispatch('saveSurvey')
+            if (!this.isLogin)
+                await this.$store.dispatch('saveUserData')
             this.$router.push({ name: 'Backup' })
         }
     },
     components: {
         YesNo
+    },
+    computed: {
+        isLogin() {
+            return this.$store.getters.IsLogin
+        }
     }
 }
 </script>
