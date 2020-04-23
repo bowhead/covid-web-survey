@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import MainLayout from '@/layout/MainLayout'
+import store from './store/store'
 
 Vue.use(Router)
 
@@ -11,42 +12,8 @@ const router = new Router({
             path: '/',
             redirect: 'Welcome',
             component: MainLayout,
+            meta: { requiresAuth: true },
             children: [
-                {
-                    path: 'sign-in',
-                    name: 'SignIn',
-                    component: () => import('./views/SignIn.vue')
-                },
-                {
-                    path: 'welcome',
-                    name: 'Welcome',
-                    component: () => import('./views/Welcome.vue')
-                },
-                {
-                    path: 'advertisement',
-                    name: 'Advertisement',
-                    component: () => import('./views/Advertisement.vue')
-                },
-                {
-                    path: 'gender',
-                    name: 'Gender',
-                    component: () => import('./views/Gender.vue')
-                },
-                {
-                    path: 'who-are-you',
-                    name: 'WhoAreYou',
-                    component: () => import('./views/WhoAreYou.vue')
-                },
-                {
-                    path: 'whats-your-number',
-                    name: 'WhatsYourNumber',
-                    component: () => import('./views/WhatsYourNumber.vue')
-                },
-                {
-                    path: 'verify',
-                    name: 'Verify',
-                    component: () => import('./views/Verify.vue')
-                },
                 {
                     path: 'symptoms',
                     name: 'Symptoms',
@@ -217,9 +184,61 @@ const router = new Router({
                     name: 'Backup',
                     component: () => import('./views/Backup.vue')
                 }
+            ]     
+        },
+        {
+            path: '/',
+            redirect: 'Welcome',
+            component: MainLayout,
+            children: [
+                {
+                    path: 'sign-in',
+                    name: 'SignIn',
+                    component: () => import('./views/SignIn.vue')
+                },
+                {
+                    path: 'welcome',
+                    name: 'Welcome',
+                    component: () => import('./views/Welcome.vue')
+                },
+                {
+                    path: 'advertisement',
+                    name: 'Advertisement',
+                    component: () => import('./views/Advertisement.vue')
+                },
+                {
+                    path: 'gender',
+                    name: 'Gender',
+                    component: () => import('./views/Gender.vue')
+                },
+                {
+                    path: 'who-are-you',
+                    name: 'WhoAreYou',
+                    component: () => import('./views/WhoAreYou.vue')
+                },
+                {
+                    path: 'whats-your-number',
+                    name: 'WhatsYourNumber',
+                    component: () => import('./views/WhatsYourNumber.vue')
+                },
+                {
+                    path: 'verify',
+                    name: 'Verify',
+                    component: () => import('./views/Verify.vue')
+                }
             ]
         }   
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const loggedIn = store.getters.getUserAddress
+    
+    if (requiresAuth && loggedIn === '')
+        next('Welcome')
+    else
+        next()
 })
 
 export default router

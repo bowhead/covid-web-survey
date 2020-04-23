@@ -32,6 +32,12 @@
 export default {
     methods: {
         feelWell: function() {
+            const answer = {
+                key: 'how_do_you_feel',
+                value: 'well'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$store.commit('SET_PERCENTAGE', 15)
             switch (this.lastPage) {
                 case '':
@@ -43,6 +49,12 @@ export default {
             }
         },
         feelUnwell: function() {
+            const answer = {
+                key: 'how_do_you_feel',
+                value: 'not well'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$store.commit('SET_PERCENTAGE', 12)
             switch (this.lastPage) {
                 case '':

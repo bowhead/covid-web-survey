@@ -1,5 +1,10 @@
 <template>
     <div class="container select-date">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="83" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-21.png">
@@ -19,7 +24,7 @@
         </div>
         <div class="row row-next pt-4">
             <div class="col-12 offset-md-3 col-md-6 text-center">
-                <button class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
+                <button :disabled="disabled" class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
             </div>
         </div>
     </div>
@@ -31,7 +36,21 @@ import { FunctionalCalendar } from 'vue-functional-calendar'
 export default {
     methods: {
         nextPage: function() {
+            let date = new Date(this.calendarData.selectedDate)
+            let dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+
+            const answer = {
+                key: 'have_been_around_ill_date',
+                value: dateString
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'HaveYouTraveled' })  
+        }
+    },
+    computed: {
+        disabled() {
+            return this.calendarData.selectedDate? false : true
         }
     },
     components: {
@@ -55,7 +74,7 @@ export default {
 
 <style>
 .select-date .row-img {
-    padding-top: 4rem;
+    padding-top: 1.5rem;
 }
 
 .select-date .title {

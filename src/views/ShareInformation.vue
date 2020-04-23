@@ -43,15 +43,38 @@ import YesNo from '../components/YesNoButtons.vue'
 
 export default {
     methods: {
-        yes: function() {
-            this.$router.push({ name: 'Advertisement' })
+        yes: async function() {
+            const answer = {
+                key: 'share_identifiable_information',
+                value: 'yes'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+            await this.$store.dispatch('saveSurvey')
+            if (!this.isLogin)
+                await this.$store.dispatch('saveUserData')
+            this.$router.push({ name: 'Backup' })
         },
-        no: function() {
-            this.$router.push({ name: 'Advertisement' })
+        no: async function() {
+            const answer = {
+                key: 'share_identifiable_information',
+                value: 'no'
+            }
+            
+            this.$store.commit('SET_DATA_SURVEY', answer)
+            await this.$store.dispatch('saveSurvey')
+            if (!this.isLogin)
+                await this.$store.dispatch('saveUserData')
+            this.$router.push({ name: 'Backup' })
         }
     },
     components: {
         YesNo
+    },
+    computed: {
+        isLogin() {
+            return this.$store.getters.IsLogin
+        }
     }
 }
 </script>

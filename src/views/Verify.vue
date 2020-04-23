@@ -53,7 +53,7 @@
 </template>
 
 <script>
-// import { generateMnemonic, EthHdWallet } from 'eth-hd-wallet'
+import { generateMnemonic, EthHdWallet } from 'eth-hd-wallet'
 
 export default {
     data() {
@@ -71,28 +71,32 @@ export default {
             const self = this
             const code = this.number1 + this.number2 + this.number3 + this.number4 + this.number5 + this.number6
 
-            window.confirmationResult.confirm(code).then(function (result) {
-                // const mnemonic = generateMnemonic()
+            window.confirmationResult.confirm(code).then(async function (result) {    
                 
-                // this.words = mnemonic.split(' ')
+                if (!self.isLogin) {
+                    self.generateWords()
+                }
+
+                let token = await result.user.getIdToken(true)
                 
-                // const wallet = EthHdWallet.fromMnemonic(mnemonic)
-                
-                // wallet.generateAddresses(1)
+                self.$store.commit('SET_AUTHORIZATION', token)
 
-                // const account = {
-                //     address: '0x' + wallet._children[0].wallet.getAddress().toString('hex'),
-                //     publicKey: '0x' + wallet._children[0].wallet.getPublicKey().toString('hex'),
-                //     privateKey: wallet._children[0].wallet.getPrivateKey().toString('hex'),
-                // }
+                if (!self.isLogin) {
+                    await self.$store.dispatch('register')
+                        .then(() => {
+                            self.$router.push({ name: 'Symptoms' })
+                        }).catch ((error) => {
+                            self.$alert(error)
+                        });
+                } else {
+                    await self.$store.dispatch('hasSurvey')
 
-                // //self.$store.commit('SET_ACCOUNT', account)
-                // console.log(account)
-                let user = result.user
-
-                self.$store.commit('SET_USER', user)
-                // console.log(user)
-                self.$router.push({ name: 'Symptoms' })
+                    if (self.hasSurvey) {
+                        self.$router.push({ name: 'HowDoYouFell' })
+                    } else {
+                        self.$router.push({ name: 'Symptoms' })
+                    }
+                }
             }).catch(function (error) {
                 switch (error.code) {
                     case 'auth/invalid-verification-code': 
@@ -100,6 +104,36 @@ export default {
                         break
                 }
             })
+        },
+        generateWords: function() {
+            const mnemonic = generateMnemonic()
+            
+            this.$store.commit('SET_WORDS', mnemonic.split(' '))
+
+            const wallet = EthHdWallet.fromMnemonic(mnemonic)
+            
+            wallet.generateAddresses(1)
+
+            const account = {
+                address: '0x' + wallet._children[0].wallet.getAddress().toString('hex'),
+                publicKey: '0x' + wallet._children[0].wallet.getPublicKey().toString('hex'),
+                privateKey: wallet._children[0].wallet.getPrivateKey().toString('hex'),
+            }
+
+            this.$store.commit('SET_ACCOUNT', account)
+        } 
+    },
+    computed: {
+        isLogin() {
+            return this.$store.getters.IsLogin
+        },
+        hasSurvey () {
+            return this.$store.getters.hasSurvey
+        }
+    },
+    mounted() {
+        if (window.confirmationResult === undefined) {
+            this.$router.push({ name: 'WhatsYourNumber' })
         }
     }
 }

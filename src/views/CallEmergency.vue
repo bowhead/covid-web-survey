@@ -21,16 +21,22 @@
 <script>
 export default {
     methods: {
-        finish: function() {
+        finish: async function() {
             switch (this.lastPage) {
                 case 'Advertisement':
                     this.$router.push({ name: 'ShareInformation' })
                     break;
                 case 'Symptoms':
-                    this.$router.push({ name: 'Advertisement' })
+                    await this.$store.dispatch('saveSurvey')
+                    if (!this.isLogin)
+                        await this.$store.dispatch('saveUserData')
+                    this.$router.push({ name: 'Backup' })
                     break;
                 case '':
-                    this.$router.push({ name: 'Advertisement' })
+                    await this.$store.dispatch('saveSurvey')
+                    if (!this.isLogin)
+                        await this.$store.dispatch('saveUserData')
+                    this.$router.push({ name: 'Backup' })
                     break;
             }
         }
@@ -38,6 +44,9 @@ export default {
     computed: {
         lastPage () {
             return this.$store.getters.getLastPage;
+        },
+        isLogin() {
+            return this.$store.getters.IsLogin
         }
     }
 }

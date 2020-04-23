@@ -1,5 +1,10 @@
 <template>
     <div class="container smoke">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="35" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-5.png">
@@ -23,9 +28,21 @@ import YesNo from '../components/YesNoButtons.vue'
 export default {
     methods:{
         yes: function() {
+            const answer = {
+                key: 'smoke',
+                value: 'yes'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'PriorHealthCondition' }) 
         },
         no: function() {
+            const answer = {
+                key: 'smoke',
+                value: 'no'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
             this.$router.push({ name: 'PriorHealthCondition' })
         }
     },
@@ -42,7 +59,7 @@ export default {
 
 <style>
 .smoke .row-img {
-    padding-top: 7.5rem;
+    padding-top: 5.5rem;
 }
 
 .smoke .row-title {

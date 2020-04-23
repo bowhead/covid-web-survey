@@ -1324,7 +1324,7 @@ import CountryFlag from 'vue-country-flag'
         },
         methods: {
             sendMessage: function() {
-                this.sendSMS()       
+                //this.sendSMS()       
             },
             show: function() {
                 this.$modal.show('countries')
@@ -1344,12 +1344,14 @@ import CountryFlag from 'vue-country-flag'
                     .then(function (confirmationResult) {
                         window.confirmationResult = confirmationResult
 
-                        const countryCode = [{
-                            key: 'countryCode',
-                            data: self.country.code
-                        }]
-
-                        self.$store.commit('SET_REGISTER_INFORMATION', countryCode)
+                        if (!self.isLogin) {
+                            const countryCode = [{
+                                key: 'countryCode',
+                                data: self.country.code
+                            }]
+                            
+                            self.$store.commit('SET_REGISTER_INFORMATION', countryCode)
+                        }
 
                         self.$router.push({ name: 'Verify' })
                     }).catch(function (error) {
@@ -1361,14 +1363,18 @@ import CountryFlag from 'vue-country-flag'
                     })
             }
         },
+        computed: {
+            isLogin() {
+                return this.$store.getters.IsLogin
+            }
+        },
         mounted() {
             const self = this
 
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('get-sign-in-code', 
             {
                 size : 'invisible',
-                callback: function(response) {
-                    console.log(response)
+                callback: function() {
                     self.sendSMS()
                 }
             })

@@ -1,5 +1,10 @@
 <template>
     <div class="container how-breathe">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="67" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-18.png">
@@ -42,7 +47,7 @@
         </div>
         <div class="row row-next">
             <div class="col-12 offset-md-3 col-md-6 text-center">
-                <button class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
+                <button :disabled="disable" class="btn btn-lg text-light next" @click="nextPage"><b>{{ $t('general.next') }}</b></button>      
             </div>
         </div>
     </div>
@@ -55,8 +60,20 @@ export default {
             intensity: ''
         }
     },
+    computed: {
+        disable() {
+            return this.intensity === ''? true : false
+        }
+    },
     methods: {
         nextPage: function() {
+            const answer = {
+                key: 'breathe_difficulty_level',
+                value: this.intensity
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+
             if (this.intensity === 'severe') {
                 this.$router.push({ name: 'CallEmergency' })
             } else {
@@ -69,7 +86,7 @@ export default {
 
 <style>
 .how-breathe .row-img {
-    padding-top: 6.5rem;
+    padding-top: 4.5rem;
 }
 
 .how-breathe .title {

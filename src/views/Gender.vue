@@ -24,7 +24,7 @@
             <div class="offset-2 col-4 offset-md-3 col-md-3 text-center gender-option">
                 <div class="row">
                     <div class="offset-7 col-4 text-center">
-                        <input v-model="gender" type="radio" id="male" value="male">
+                        <input v-model="gender" type="radio" id="male" value="Male">
                         <label class="inline" for="male"></label>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
             <div class="offset-1 col-4 offset-md-1 col-md-3 gender-option">
                 <div class="row">
                     <div class="offset-7 col-4 text-center">
-                        <input v-model="gender" type="radio" id="female" value="female">
+                        <input v-model="gender" type="radio" id="female" value="Female">
                         <label class="inline" for="female"></label>
                     </div>
                 </div>

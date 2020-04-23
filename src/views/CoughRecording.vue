@@ -1,6 +1,11 @@
 <template>
     <div class="container cough-recording">
-        <div class="row pt-5">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="61" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
+        <div class="row pt-4">
             <div class="offset-8 col-3 offset-md-7 col-md-2 text-center">
                 <button class="btn btn-sm skip" @click="skip">{{ $t('coughRecording.skip') }}</button>  
             </div>
@@ -94,14 +99,29 @@ export default {
             this.toogleTime();
             this.rec.stop();
         },
-        save: function() {
+        save: async function() {
+
+            let blob = new Blob(this.audioChunks, { type: 'audio/wav' })
+            
+            let record = this.blobToFile(blob, + new Date() + '.wav')
+
+            await this.$store.dispatch('uploadCoughRecording', record)
+
             this.$router.push({ name: 'YouHaveDifficultyBreath' })
+        },
+        blobToFile: function (theBlob, fileName) {
+            theBlob.lastModifiedDate = new Date();
+            theBlob.name = fileName;
+            return theBlob;
         },
         skip: function() {
             this.$router.push({ name: 'YouHaveDifficultyBreath' })
         },
         handlerFunction: function(stream) {
-            this.rec = new MediaRecorder(stream)
+            const mime = ['audio/wav', 'audio/mpeg', 'audio/webm', 'audio/ogg'].filter(MediaRecorder.isTypeSupported)[0];
+            this.rec = new MediaRecorder(stream, {
+                mimeType: mime
+            })
             this.rec.ondataavailable = e => {
                 this.audioChunks.push(e.data)
                 if (this.rec.state == "inactive") {

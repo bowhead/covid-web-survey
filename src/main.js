@@ -8,6 +8,7 @@ import Progress from 'vue-multiple-progress'
 import VModal from 'vue-js-modal'
 import firebase from 'firebase'
 import VueSimpleAlert from 'vue-simple-alert'
+import Vuelidate from 'vuelidate'
 import * as VueGoogleMaps from 'vue2-google-maps'
 
 import 'bootstrap'
@@ -20,6 +21,7 @@ Vue.use(VueMaterial)
 Vue.use(Progress)
 Vue.use(VModal)
 Vue.use(VueSimpleAlert)
+Vue.use(Vuelidate)
 
 Vue.use(VueGoogleMaps, {
     load: {

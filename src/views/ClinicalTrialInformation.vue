@@ -1,5 +1,10 @@
 <template>
     <div class="container trial-information">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="42" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-title">
             <div class="col-12 text-center">
                 <label class="title">{{ $t('clinicalTrialInformation.title') }}</label>              
@@ -12,32 +17,32 @@
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6  text-center">
-                <input type="email" class="form-control field" :placeholder="$t('clinicalTrialInformation.email')">
+                <input v-model="pacient.email" type="email" class="form-control field" :placeholder="$t('clinicalTrialInformation.email')">
             </div>
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6 text-center">
-                <input type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.firstName')">
+                <input v-model="pacient.first_name" type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.firstName')">
             </div>
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6 text-center">
-                <input type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.lastName')">
+                <input v-model="pacient.last_name" type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.lastName')">
             </div>
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6 text-center">
-                <input type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.city')">
+                <input v-model="pacient.city" type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.city')">
             </div>
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6 text-center">
-                <input type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.state')">
+                <input v-model="pacient.state" type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.state')">
             </div>
         </div>
         <div class="row pt-4">
             <div class="offset-1 col-10 offset-md-3 col-md-6 text-center">
-                <input type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.country')">
+                <input v-model="pacient.country" type="text" class="form-control field" :placeholder="$t('clinicalTrialInformation.country')">
             </div>
         </div>
         <div class="row pt-4">
@@ -49,10 +54,58 @@
 </template>
 
 <script>
+import { required, email } from 'vuelidate/lib/validators'
+
 export default {
+    data() {
+        return {
+            pacient: {
+                email: '',
+                first_name: '',
+                last_name: '',
+                city: '',
+                state: '',
+                country: ''
+            }
+        }
+    },
+    validations: {
+        pacient: {
+            email: {
+                required,
+                email
+            },
+            first_name: {
+                required
+            },
+            last_name: {
+                required
+            },
+            city: {
+                required
+            },
+            state: {
+                required
+            },
+            country: {
+                required
+            }
+        }
+    },
     methods: {
         save: function() {
-            this.$router.push({ name: 'ContactAnyone' })
+            if (this.$v.$invalid) {
+                this.$alert(this.$t('general.missingFields'))
+            } else {
+                const answer = {
+                    key: 'clinical_trial_personal_information',
+                    value: this.pacient
+                }
+                
+                this.$store.commit('SET_DATA_SURVEY', answer)
+
+                this.$router.push({ name: 'ContactAnyone' })
+            }
         }
     },
     computed: {
@@ -68,7 +121,7 @@ export default {
 
 <style>
 .trial-information .row-title {
-    padding-top: 3.6rem;
+    padding-top: 1.3rem;
 }
 
 .trial-information .title {

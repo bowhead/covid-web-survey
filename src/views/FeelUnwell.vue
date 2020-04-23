@@ -1,5 +1,10 @@
 <template>
     <div class="container fell-unwell">
+        <div class="row pt-3">
+            <div class="col-12 offset-md-2 col-md-8">
+                <vm-progress :percentage="32" :show-text="false" :stroke-width="18" :strokeColor="'#2bb1c4'"></vm-progress>
+            </div>
+        </div>
         <div class="row row-img">
             <div class="col-12 text-center">
                 <img src="../assets/corona-8.png">
@@ -27,10 +32,24 @@
 export default {
     methods: {
         feelIll: function() {
+            const answer = {
+                key: 'not_feel_well_reason',
+                value: 'ill'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+
             this.$store.commit('SET_LAST_PAGE', 'WhyFeelUnwell')
             this.$router.push({ name: 'DoYouSmoke' })  
         },
         tired: function() {
+            const answer = {
+                key: 'not_feel_well_reason',
+                value: 'tired/exhausted'
+            }
+
+            this.$store.commit('SET_DATA_SURVEY', answer)
+
             this.$store.commit('SET_LAST_PAGE', 'WhyFeelUnwell')
             this.$router.push({ name: 'DoYouSmoke' })  
         }
@@ -48,7 +67,7 @@ export default {
 
 <style>
 .fell-unwell .row-img {
-    padding-top: 7.5rem;
+    padding-top: 5rem;
 }
 
 .fell-unwell .row-title {

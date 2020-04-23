@@ -127,7 +127,7 @@ export default {
         return {
             name: '',
             weight: '',
-            weightMetric: 'lbs',
+            weightMetric: 'lb',
             height: '',
             heightMetric: 'ft',
             selectedDay: '',
@@ -165,8 +165,6 @@ export default {
                     { key: 'weightMetric', data: this.weightMetric }
                 ]
 
-                console.log(register)
-
                 this.$store.commit('SET_REGISTER_INFORMATION', register)
 
                 this.$router.push({ name: 'WhatsYourNumber' })  
@@ -191,11 +189,11 @@ export default {
         },
         changeWeightMetric: function() {
             switch(this.weightMetric) {
-                case 'lbs':
+                case 'lb':
                     this.weightMetric = 'kg'
                     break;
                 case 'kg':
-                    this.weightMetric = 'lbs'
+                    this.weightMetric = 'lb'
             }
         },
         changeHeightMetric: function() {
